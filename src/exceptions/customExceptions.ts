@@ -7,7 +7,7 @@ export class CustomException extends Error {
         this.statusCode = statusCode
     }
 
-    static UnathorizedException(message: string): CustomException {
+    static UnauthorizedException(message: string): CustomException {
         return new CustomException(message, StatusCodes.UNAUTHORIZED)
     }
 }
