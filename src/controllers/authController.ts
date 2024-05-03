@@ -1,6 +1,6 @@
-import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
 import { AuthInput } from "../validation/authValidation";
+import { signUpValidation } from "../validation/signUpValidation";
 import type { Request, Response } from "express";
 import type { AuthService } from "../services/authService";
 
@@ -16,13 +16,7 @@ export class AuthController implements IAuthController {
 
 	async signUp(req: Request, res: Response): Promise<object> {
 		try {
-			const userSchema = z.object({
-				userName: z.string().optional(),
-				email: z.string().email().optional(),
-				password: z.string().optional(),
-			});
-
-			const user = userSchema.parse(req.body);
+			const user = signUpValidation.parse(req.body);
 			const newUser = await this.authService.signUp(user);
 
 			return res.status(StatusCodes.CREATED).json({
