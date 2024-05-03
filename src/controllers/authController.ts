@@ -1,29 +1,57 @@
-import type { Request, Response } from 'express'
-import type { AuthService } from '../services/authService'
-import { StatusCodes } from 'http-status-codes';
-import { AuthInput } from '../validation/authValidation';
+import { z } from "zod";
+import { StatusCodes } from "http-status-codes";
+import { AuthInput } from "../validation/authValidation";
+import type { Request, Response } from "express";
+import type { AuthService } from "../services/authService";
 
 interface IAuthController {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    signIn(req: Request, res: Response): Promise<any>
+	signUp(req: Request, res: Response): Promise<object>;
+	signIn(req: Request, res: Response): Promise<object>;
 }
 
-class AuthController implements IAuthController {
+export class AuthController implements IAuthController {
 	constructor(private readonly authService: AuthService) {
-		this.signIn = this.signIn.bind(this);
+		this.signUp = this.signUp.bind(this);
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	async signIn(req: Request, res: Response): Promise<any> {
+	async signUp(req: Request, res: Response): Promise<object> {
 		try {
-			const { email, password } = AuthInput.parse(req.body)
-			const authorization = await this.authService.authenticate(email, password);
+			const userSchema = z.object({
+				userName: z.string().optional(),
+				email: z.string().email().optional(),
+				password: z.string().optional(),
+			});
 
-			res.status(StatusCodes.OK).json({
+			const user = userSchema.parse(req.body);
+			const newUser = await this.authService.signUp(user);
+
+			return res.status(StatusCodes.CREATED).json({
+				statusCode: StatusCodes.CREATED,
+				message: "User created successfully",
+				user: newUser,
+			});
+		} catch (error) {
+			console.log("Handler error: SignUp in AuthController", error);
+
+			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+				message: "Error ocurred while executing the sign up endpoint",
+			});
+		}
+	}
+
+	async signIn(req: Request, res: Response): Promise<object> {
+		try {
+			const userCredentials = AuthInput.parse(req.body);
+			const authorization = await this.authService.signIn(userCredentials);
+
+			return res.status(StatusCodes.OK).json({
 				message: "Successful authentication",
 				token: authorization,
 			});
 		} catch (error) {
+			console.log("Handler error: SignIn in AuthController");
+
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
 				message:
@@ -32,6 +60,3 @@ class AuthController implements IAuthController {
 		}
 	}
 }
-
-export default AuthController
-
