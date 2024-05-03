@@ -10,4 +10,8 @@ export class CustomException extends Error {
     static UnauthorizedException(message: string): CustomException {
         return new CustomException(message, StatusCodes.UNAUTHORIZED)
     }
+
+    static ConflictException(message: string): CustomException {
+        return new CustomException(message, StatusCodes.CONFLICT)
+    }
 }
