@@ -12,6 +12,7 @@ interface IAuthController {
 export class AuthController implements IAuthController {
 	constructor(private readonly authService: AuthService) {
 		this.signUp = this.signUp.bind(this);
+		this.signIn = this.signIn.bind(this);
 	}
 
 	async signUp(req: Request, res: Response): Promise<object> {
@@ -37,11 +38,11 @@ export class AuthController implements IAuthController {
 	async signIn(req: Request, res: Response): Promise<object> {
 		try {
 			const userCredentials = AuthInput.parse(req.body);
-			const authorization = await this.authService.signIn(userCredentials);
+			const token = await this.authService.signIn(userCredentials);
 
 			return res.status(StatusCodes.OK).json({
 				message: "Successful authentication",
-				token: authorization,
+				token,
 			});
 		} catch (error) {
 			console.log("Handler error: SignIn in AuthController");
