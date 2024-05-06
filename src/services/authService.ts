@@ -30,12 +30,10 @@ export class AuthService {
 		return newUser;
 	}
 
-	// Authenticate user
-	async signIn(userCredentials: UserEntity) {
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		const { email, password } = userCredentials as any;
-
-		const secret = process.env.SECRET;
+	async signIn(userCredentials: object): Promise<string> {
+		const { email, password }: { email: string; password: string } =
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			userCredentials as any;
 
 		const user = await this.userRepository.findUserByEmail(email);
 
@@ -49,18 +47,24 @@ export class AuthService {
 		);
 
 		if (!isValidPassword) {
-			throw CustomException.UnauthorizedException("Unauthorized");
+			throw CustomException.UnauthorizedException("Invalid password");
 		}
 
-		const tokenSign = jwt.sign(
-			{ id: user._id, email: user.email },
-			secret || "",
-			{
-				expiresIn: "8h",
-			},
-		);
+		const secret = process.env.SECRET as string;
 
-		return tokenSign;
+		const payload = {
+			id: user._id,
+			email: user.email,
+			username: user.userName,
+		};
+
+		const options: jwt.SignOptions = {
+			expiresIn: "8h",
+		};
+
+		const token = jwt.sign(payload, secret, options);
+
+		return token;
 	}
 
 	// Generate token for authenticated user
