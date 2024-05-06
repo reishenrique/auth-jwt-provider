@@ -1,9 +1,9 @@
 import "dotenv/config";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { CustomException } from "../exceptions/customExceptions";
 import type { UserEntity } from "../entities/UserEntity";
 import type { IUserRepository } from "../interfaces/IUserRepository";
+import { generateAccesToken } from "../utils/jwtUtils";
 
 export class AuthService {
 	constructor(private userRepository: IUserRepository) {
@@ -50,25 +50,10 @@ export class AuthService {
 			throw CustomException.UnauthorizedException("Invalid password");
 		}
 
-		const secret = process.env.SECRET as string;
-
-		const payload = {
-			id: user._id,
-			email: user.email,
-			username: user.userName,
-		};
-
-		const options: jwt.SignOptions = {
-			expiresIn: "8h",
-		};
-
-		const token = jwt.sign(payload, secret, options);
+		const token = generateAccesToken(user);
 
 		return token;
 	}
-
-	// Generate token for authenticated user
-	async generateAccessToken(userId: string) {}
 
 	// Generate refresh token for authenticated user
 	async generateRefreshToken(userId: string) {}
