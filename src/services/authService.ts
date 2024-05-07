@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { CustomException } from "../exceptions/customExceptions";
 import type { UserEntity } from "../entities/UserEntity";
 import type { IUserRepository } from "../interfaces/IUserRepository";
-import { generateAccesToken } from "../utils/jwtUtils";
+import { generateAccessToken } from "../utils/jwtUtils";
 
 export class AuthService {
 	constructor(private userRepository: IUserRepository) {
@@ -11,7 +11,6 @@ export class AuthService {
 	}
 
 	async signUp(user: UserEntity): Promise<UserEntity> {
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const { email }: { email: string } = user as any;
 
 		const userExistsByEmail = await this.userRepository.findUserByEmail(email);
@@ -32,7 +31,6 @@ export class AuthService {
 
 	async signIn(userCredentials: object): Promise<string> {
 		const { email, password }: { email: string; password: string } =
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			userCredentials as any;
 
 		const user = await this.userRepository.findUserByEmail(email);
@@ -50,14 +48,11 @@ export class AuthService {
 			throw CustomException.UnauthorizedException("Invalid password");
 		}
 
-		const token = generateAccesToken(user);
+		const { token }: { token: string } = generateAccessToken(user);
 
 		return token;
 	}
 
 	// Generate refresh token for authenticated user
 	async generateRefreshToken(userId: string) {}
-
-	// Verify access token
-	async verifyAccessToken(token: string) {}
 }
