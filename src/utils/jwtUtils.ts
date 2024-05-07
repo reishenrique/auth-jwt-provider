@@ -1,7 +1,7 @@
 import "dotenv/config";
 import jwt from "jsonwebtoken";
 
-export const generateAccesToken = (user: any) => {
+export const generateAccessToken = (user: any) => {
 	const payload = {
 		id: user._id,
 		email: user.email,
@@ -14,7 +14,13 @@ export const generateAccesToken = (user: any) => {
 		expiresIn: "8h",
 	};
 
+	const refreshExpiresIn: jwt.SignOptions = {
+		expiresIn: "7d",
+	};
+
 	const token = jwt.sign(payload, secret, expiresIn);
 
-	return token;
+	const refreshToken = jwt.sign(payload, secret, refreshExpiresIn);
+
+	return { token, refreshToken };
 };
