@@ -3,16 +3,19 @@ import { AuthInput } from "../validation/authValidation";
 import { signUpValidation } from "../validation/signUpValidation";
 import type { Request, Response } from "express";
 import type { AuthService } from "../services/authService";
+import { z } from "zod";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
 	signIn(req: Request, res: Response): Promise<object>;
+	refreshToken(req: Request, res: Response): Promise<object>;
 }
 
 export class AuthController implements IAuthController {
 	constructor(private readonly authService: AuthService) {
 		this.signUp = this.signUp.bind(this);
 		this.signIn = this.signIn.bind(this);
+		this.refreshToken = this.refreshToken.bind(this);
 	}
 
 	async signUp(req: Request, res: Response): Promise<object> {
@@ -41,8 +44,8 @@ export class AuthController implements IAuthController {
 			const token = await this.authService.signIn(userCredentials);
 
 			return res.status(StatusCodes.OK).json({
-				message: "Successful authentication",
-				token,
+				message: "Authentication successful",
+				...token,
 			});
 		} catch (error) {
 			console.log("Handler error: SignIn in AuthController");
@@ -51,6 +54,31 @@ export class AuthController implements IAuthController {
 				statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
 				message:
 					"Error while executing the user sign in/authentication endpoint",
+			});
+		}
+	}
+
+	async refreshToken(req: Request, res: Response): Promise<object> {
+		try {
+			const refreshTokenSchema = z.object({
+				email: z.string(),
+				refreshToken: z.string(),
+			});
+
+			const refreshToken = refreshTokenSchema.parse(req.body);
+			const refreshAuthToken =
+				await this.authService.generateRefreshToken(refreshToken);
+
+			return res.status(StatusCodes.OK).json({
+				message: "New token for user successfully generated",
+				...refreshAuthToken,
+			});
+		} catch (error) {
+			console.log("Handler error: Refresh Token in AuthController");
+
+			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
+				message: "Error while executing the refresh token endpoint",
 			});
 		}
 	}
