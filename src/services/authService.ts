@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { CustomException } from "../exceptions/customExceptions";
 import type { UserEntity } from "../entities/UserEntity";
 import type { IUserRepository } from "../interfaces/IUserRepository";
-import { generateAccessToken } from "../utils/jwtUtils";
+import { generateAccessToken, refreshAccessToken } from "../utils/jwtUtils";
 
 export class AuthService {
 	constructor(private userRepository: IUserRepository) {
@@ -29,7 +29,7 @@ export class AuthService {
 		return newUser;
 	}
 
-	async signIn(userCredentials: object): Promise<string> {
+	async signIn(userCredentials: object): Promise<object> {
 		const { email, password }: { email: string; password: string } =
 			userCredentials as any;
 
@@ -48,11 +48,36 @@ export class AuthService {
 			throw CustomException.UnauthorizedException("Invalid password");
 		}
 
-		const { token }: { token: string } = generateAccessToken(user);
+		const { token, refreshToken }: { token: string; refreshToken: string } =
+			generateAccessToken(user);
 
-		return token;
+		return { token, refreshToken };
 	}
 
-	// Generate refresh token for authenticated user
-	async generateRefreshToken(userId: string) {}
+	async generateRefreshToken(refreshAuthCredentials: object): Promise<object> {
+		const { refreshToken, email }: { refreshToken: string; email: string } =
+			refreshAuthCredentials as any;
+
+		if (!refreshToken || refreshToken === "") {
+			throw CustomException.BadRequestException(
+				"Refresh token is required to proceed with the execution",
+			);
+		}
+
+		if (!email || email === "") {
+			throw CustomException.BadRequestException(
+				"User email is required to proceed with the execution",
+			);
+		}
+
+		const user = this.userRepository.findUserByEmail(email);
+
+		if (!user) {
+			throw CustomException.NotFoundException("User not found");
+		}
+
+		const token = refreshAccessToken(refreshToken, user);
+
+		return { token };
+	}
 }
