@@ -18,4 +18,12 @@ export class CustomException extends Error {
 	static NotFoundException(message: string): CustomException {
 		return new CustomException(message, StatusCodes.NOT_FOUND);
 	}
+
+	static ForbiddenException(message: string): CustomException {
+		return new CustomException(message, StatusCodes.FORBIDDEN);
+	}
+
+	static BadRequestException(message: string): CustomException {
+		return new CustomException(message, StatusCodes.BAD_REQUEST);
+	}
 }
