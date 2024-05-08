@@ -24,3 +24,14 @@ export const generateAccessToken = (user: any) => {
 
 	return { token, refreshToken };
 };
+
+export const refreshAccessToken = (refreshToken: string, user: any) => {
+	const secret = process.env.SECRET as string;
+
+	const verifyRefreshToken = jwt.verify(refreshToken, secret || "");
+	if (!verifyRefreshToken) return;
+
+	const { token }: { token: string } = generateAccessToken(user);
+
+	return token;
+};
