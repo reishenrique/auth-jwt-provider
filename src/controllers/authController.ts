@@ -3,12 +3,14 @@ import { AuthInput } from "../validation/authValidation";
 import { signUpValidation } from "../validation/signUpValidation";
 import type { Request, Response } from "express";
 import type { AuthService } from "../services/authService";
-import { z } from "zod";
+import { refreshTokenValidation } from "../validation/refreshTokenValidation";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
 	signIn(req: Request, res: Response): Promise<object>;
 	refreshToken(req: Request, res: Response): Promise<object>;
+	passwordRecovery(req: Request, res: Response): unknown;
+	emailVerification(req: Request, res: Response): unknown;
 }
 
 export class AuthController implements IAuthController {
@@ -60,12 +62,7 @@ export class AuthController implements IAuthController {
 
 	async refreshToken(req: Request, res: Response): Promise<object> {
 		try {
-			const refreshTokenSchema = z.object({
-				email: z.string(),
-				refreshToken: z.string(),
-			});
-
-			const refreshToken = refreshTokenSchema.parse(req.body);
+			const refreshToken = refreshTokenValidation.parse(req.body);
 			const refreshAuthToken =
 				await this.authService.generateRefreshToken(refreshToken);
 
@@ -82,4 +79,8 @@ export class AuthController implements IAuthController {
 			});
 		}
 	}
+
+	async passwordRecovery(req: Request, res: Response) {}
+
+	async emailVerification(req: Request, res: Response) {}
 }
