@@ -26,4 +26,8 @@ export class CustomException extends Error {
 	static BadRequestException(message: string): CustomException {
 		return new CustomException(message, StatusCodes.BAD_REQUEST);
 	}
+
+	static InternalServerException(message: string): CustomException {
+		return new CustomException(message, StatusCodes.INTERNAL_SERVER_ERROR);
+	}
 }
