@@ -12,4 +12,14 @@ export class UserRepository implements IUserRepository {
 		const userExistsByEmail = await UserModel.findOne({ email });
 		return userExistsByEmail;
 	}
+
+	async updateUserById(id: string, newUserData: object) {
+		const findUserAndUpdate = await UserModel.findByIdAndUpdate(
+			id,
+			newUserData,
+			{ new: true },
+		);
+
+		return findUserAndUpdate;
+	}
 }
