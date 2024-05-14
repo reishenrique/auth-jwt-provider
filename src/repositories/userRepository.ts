@@ -22,4 +22,13 @@ export class UserRepository implements IUserRepository {
 
 		return findUserAndUpdate;
 	}
+
+	async updateUserPasswordByEmail(email: string, newPassword: string) {
+		const findUserAndUpdate = await UserModel.updateOne(
+			{ email },
+			{ $set: { password: newPassword } },
+		);
+
+		return findUserAndUpdate;
+	}
 }
