@@ -4,12 +4,13 @@ import { signUpValidation } from "../validation/signUpValidation";
 import type { Request, Response } from "express";
 import type { AuthService } from "../services/authService";
 import { refreshTokenValidation } from "../validation/refreshTokenValidation";
+import { passwordRecoveryValidation } from "../validation/passwordRecoveryValidation";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
 	signIn(req: Request, res: Response): Promise<object>;
 	refreshToken(req: Request, res: Response): Promise<object>;
-	passwordRecovery(req: Request, res: Response): unknown;
+	forgotPassword(req: Request, res: Response): Promise<object>;
 	emailVerification(req: Request, res: Response): unknown;
 }
 
@@ -18,6 +19,7 @@ export class AuthController implements IAuthController {
 		this.signUp = this.signUp.bind(this);
 		this.signIn = this.signIn.bind(this);
 		this.refreshToken = this.refreshToken.bind(this);
+		this.forgotPassword = this.forgotPassword.bind(this);
 	}
 
 	async signUp(req: Request, res: Response): Promise<object> {
@@ -80,7 +82,23 @@ export class AuthController implements IAuthController {
 		}
 	}
 
-	async passwordRecovery(req: Request, res: Response) {}
+	async forgotPassword(req: Request, res: Response): Promise<object> {
+		try {
+			const { email } = passwordRecoveryValidation.parse(req.body);
+			await this.authService.passwordRecovery(email);
+
+			return res.status(StatusCodes.OK).json({
+				message: "New password updated",
+			});
+		} catch (error) {
+			console.log("Handler error: Password Recovery in AuthController");
+
+			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
+				message: "Error while executing the password recovery",
+			});
+		}
+	}
 
 	async emailVerification(req: Request, res: Response) {}
 }
