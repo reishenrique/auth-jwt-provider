@@ -1,9 +1,11 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
+import crypto from "node:crypto";
 import { CustomException } from "../exceptions/customExceptions";
+import { generateAccessToken, refreshAccessToken } from "../utils/jwtUtils";
+import { send } from "../utils/mailerUtils";
 import type { UserEntity } from "../entities/UserEntity";
 import type { IUserRepository } from "../interfaces/IUserRepository";
-import { generateAccessToken, refreshAccessToken } from "../utils/jwtUtils";
 
 export class AuthService {
 	constructor(private userRepository: IUserRepository) {
@@ -79,5 +81,38 @@ export class AuthService {
 		const token = refreshAccessToken(refreshToken, user);
 
 		return { token };
+	}
+
+	async passwordRecovery(email: string): Promise<void> {
+		if (!email) {
+			throw CustomException.BadRequestException("Email is required to proceed");
+		}
+
+		const user = await this.userRepository.findUserByEmail(email);
+
+		if (!user) {
+			throw CustomException.NotFoundException("User not found by email");
+		}
+
+		const newPassword = crypto.randomBytes(8).toString("hex");
+
+		const subject = "Password Recovery Email";
+
+		const body = `Your new password is ${newPassword}`;
+
+		const sendNewPassword: any = send(user.email, subject, body);
+
+		if (sendNewPassword instanceof Error) {
+			throw CustomException.InternalServerException("Error sending email");
+		}
+
+		const saltRounds = await bcrypt.genSalt(10);
+
+		const hashNewPassword = await bcrypt.hash(
+			newPassword as string,
+			saltRounds,
+		);
+
+		await this.userRepository.updateUserPasswordByEmail(email, hashNewPassword);
 	}
 }
