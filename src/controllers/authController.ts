@@ -5,13 +5,15 @@ import type { Request, Response } from "express";
 import type { AuthService } from "../services/authService";
 import { refreshTokenValidation } from "../validation/refreshTokenValidation";
 import { passwordRecoveryValidation } from "../validation/passwordRecoveryValidation";
+import { validateEmailValidation } from "../validation/validateEmailValidation";
+import { CustomException } from "../exceptions/customExceptions";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
 	signIn(req: Request, res: Response): Promise<object>;
 	refreshToken(req: Request, res: Response): Promise<object>;
 	forgotPassword(req: Request, res: Response): Promise<object>;
-	emailVerification(req: Request, res: Response): unknown;
+	emailVerification(req: Request, res: Response): Promise<object>;
 }
 
 export class AuthController implements IAuthController {
@@ -20,6 +22,7 @@ export class AuthController implements IAuthController {
 		this.signIn = this.signIn.bind(this);
 		this.refreshToken = this.refreshToken.bind(this);
 		this.forgotPassword = this.forgotPassword.bind(this);
+		this.emailVerification = this.emailVerification.bind(this);
 	}
 
 	async signUp(req: Request, res: Response): Promise<object> {
@@ -95,10 +98,32 @@ export class AuthController implements IAuthController {
 
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
-				message: "Error while executing the password recovery",
+				message: "Error while executing the password recovery endpoint",
 			});
 		}
 	}
 
-	async emailVerification(req: Request, res: Response) {}
+	async emailVerification(req: Request, res: Response): Promise<object> {
+		try {
+			const { email } = validateEmailValidation.parse(req.body);
+			await this.authService.validateEmail(email);
+
+			return res.status(StatusCodes.OK).json({
+				message: "The email sent is valid",
+			});
+		} catch (error) {
+			console.log("Handler error: Email Verification in AuthController");
+
+			if (error instanceof CustomException) {
+				return res.status(error.statusCode).json({
+					message: error.message,
+				});
+			}
+
+			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
+				message: "Internal Server Error",
+			});
+		}
+	}
 }
