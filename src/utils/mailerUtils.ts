@@ -19,3 +19,23 @@ export const send = (to: string, subject: string, body: string) => {
 		text: body,
 	});
 };
+
+export const validateMailbox = async (email: string): Promise<boolean> => {
+	const domain = email.split("@")[1];
+
+	const transporter = nodemailer.createTransport({
+		host: `smtp.${domain}`,
+		port: process.env.MAIL_PORT,
+		sucure: false,
+		tls: {
+			rejectUnauthorized: false,
+		},
+	} as SMTPTransport.Options);
+
+	try {
+		await transporter.verify();
+		return true;
+	} catch (error) {
+		return false;
+	}
+};
