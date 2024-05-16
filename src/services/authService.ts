@@ -3,9 +3,10 @@ import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import { CustomException } from "../exceptions/customExceptions";
 import { generateAccessToken, refreshAccessToken } from "../utils/jwtUtils";
-import { send } from "../utils/mailerUtils";
+import { send, validateMailbox } from "../utils/mailerUtils";
 import type { UserEntity } from "../entities/UserEntity";
 import type { IUserRepository } from "../interfaces/IUserRepository";
+import { validateEmailDomain } from "../utils/dnsUtils";
 
 export class AuthService {
 	constructor(private userRepository: IUserRepository) {
@@ -114,5 +115,35 @@ export class AuthService {
 		);
 
 		await this.userRepository.updateUserPasswordByEmail(email, hashNewPassword);
+	}
+
+	async validateEmail(email: string): Promise<boolean> {
+		if (!email) {
+			throw CustomException.BadRequestException("Email is required to proceed");
+		}
+
+		const user = await this.userRepository.findUserByEmail(email);
+
+		if (!user) {
+			throw CustomException.NotFoundException("Email not found");
+		}
+
+		const isDomainValid = await validateEmailDomain(email);
+
+		if (!isDomainValid) {
+			throw CustomException.BadRequestException(
+				"The email domain does not exist",
+			);
+		}
+
+		const isMailboxValid = await validateMailbox(email);
+
+		if (!isMailboxValid) {
+			throw CustomException.BadRequestException(
+				"The email mailbox does not exist or cannot receive emails ",
+			);
+		}
+
+		return true;
 	}
 }
