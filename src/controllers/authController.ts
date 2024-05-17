@@ -38,6 +38,12 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: SignUp in AuthController", error);
 
+			if (error instanceof CustomException) {
+				return res.status(error.statusCode).json({
+					message: error.message,
+				});
+			}
+
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
 				message: "Error ocurred while executing the sign up endpoint",
@@ -57,10 +63,15 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: SignIn in AuthController");
 
+			if (error instanceof CustomException) {
+				return res.status(error.statusCode).json({
+					message: error.message,
+				});
+			}
+
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
-				message:
-					"Error while executing the user sign in/authentication endpoint",
+				message: "Internal Server Error",
 			});
 		}
 	}
@@ -78,9 +89,15 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: Refresh Token in AuthController");
 
+			if (error instanceof CustomException) {
+				return res.status(error.statusCode).json({
+					message: error.message,
+				});
+			}
+
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
-				message: "Error while executing the refresh token endpoint",
+				message: "Internal Server Error",
 			});
 		}
 	}
@@ -96,9 +113,15 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: Password Recovery in AuthController");
 
+			if (error instanceof CustomException) {
+				return res.status(error.statusCode).json({
+					message: error.message,
+				});
+			}
+
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
-				message: "Error while executing the password recovery endpoint",
+				message: "Internal Server Error",
 			});
 		}
 	}
