@@ -1,39 +1,39 @@
 {
-  "name": "auth-jwt-provider",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node build/server.js",
-    "build": "tsc",
-    "dev": "ts-node src/server.ts",
-    "lint": "eslint . --ext .ts,.tsx --fix"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@biomejs/biome": "1.7.2",
-    "@types/bcrypt": "^5.0.2",
-    "@types/express": "^4.17.21",
-    "@types/jest": "^29.5.12",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.12.7",
-    "@types/nodemailer": "^6.4.15",
-    "jest": "^29.7.0",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "http-status-codes": "^2.3.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.3.3",
-    "nodemailer": "^6.9.13",
-    "ts-node": "^10.9.2",
-    "zod": "^3.23.5"
-  }
+	"name": "auth-jwt-provider",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "jest",
+		"start": "node build/server.js",
+		"build": "tsc",
+		"dev": "ts-node src/server.ts",
+		"lint": "eslint . --ext .ts,.tsx --fix"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@biomejs/biome": "1.7.2",
+		"@types/bcrypt": "^5.0.2",
+		"@types/express": "^4.17.21",
+		"@types/jest": "^29.5.12",
+		"@types/jsonwebtoken": "^9.0.6",
+		"@types/mongoose": "^5.11.97",
+		"@types/node": "^20.12.7",
+		"@types/nodemailer": "^6.4.15",
+		"jest": "^29.7.0",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"bcrypt": "^5.1.1",
+		"dotenv": "^16.4.5",
+		"express": "^4.19.2",
+		"http-status-codes": "^2.3.0",
+		"jsonwebtoken": "^9.0.2",
+		"mongoose": "^8.3.3",
+		"nodemailer": "^6.9.13",
+		"ts-node": "^10.9.2",
+		"zod": "^3.23.5"
+	}
 }
