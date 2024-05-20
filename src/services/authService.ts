@@ -42,7 +42,7 @@ export class AuthService {
 			throw CustomException.UnauthorizedException("Unauthorized");
 		}
 
-		const isValidPassword = await bcrypt.compareSync(
+		const isValidPassword = await bcrypt.compare(
 			password as string,
 			user.password,
 		);
