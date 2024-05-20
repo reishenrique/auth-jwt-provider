@@ -1,56 +1,92 @@
 import { CustomException } from "../../exceptions/customExceptions";
-import { IUserRepository } from "../../interfaces/IUserRepository";
 import { AuthService } from "../../services/authService";
 import { authRepositoryInMemory } from "../mock/userRepositoryInMemory";
+import type { IUserRepository } from "../../interfaces/IUserRepository";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const makeSut = (users?: any): { sut: AuthService, mockUserRepository: IUserRepository} => {
-    const mockUserRepository = new authRepositoryInMemory(users)
-    const sut = new AuthService(mockUserRepository)
+const makeSut = (
+	users?: any,
+): { sut: AuthService; mockUserRepository: IUserRepository } => {
+	const mockUserRepository = new authRepositoryInMemory(users);
+	const sut = new AuthService(mockUserRepository);
 
-    jest.spyOn(mockUserRepository, "create")
-    jest.spyOn(mockUserRepository, "findUserByEmail")
-    jest.spyOn(mockUserRepository, "updateUserById")
-    jest.spyOn(mockUserRepository, "updateUserPasswordByEmail")
+	jest.spyOn(mockUserRepository, "create");
+	jest.spyOn(mockUserRepository, "findUserByEmail");
+	jest.spyOn(mockUserRepository, "updateUserById");
+	jest.spyOn(mockUserRepository, "updateUserPasswordByEmail");
 
-    return { sut, mockUserRepository }
-}
+	return { sut, mockUserRepository };
+};
+
+jest.mock("bcrypt");
+jest.mock("jsonwebtoken");
 
 describe("Auth Service unit tests", () => {
-    beforeEach( async () => {
-        jest.clearAllMocks()
-    })
+	const mockedBcryptCompare = bcrypt.compare as jest.Mock;
+	const mockedJwtSign = jwt.sign as jest.Mock;
 
-    it("Should return a successfully registered new user", async () => {
-        const user = {
-            userName: "John Doe",
-            email: "test@email.com",
-            password: "testpassword@123"
-        }
+	beforeEach(async () => {
+		jest.clearAllMocks();
+	});
 
-        const { sut, mockUserRepository } = makeSut()
+	it("Should return a successfully registered new user", async () => {
+		const user = {
+			userName: "John Doe",
+			email: "test@email.com",
+			password: "testpassword@123",
+		};
 
-        const newUser = await sut.signUp(user)
+		const { sut, mockUserRepository } = makeSut();
 
-        expect(newUser.email).toBe(user.email)
-        
-        expect(mockUserRepository.create).toHaveBeenCalledTimes(1)
-        expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1)
-    })
+		const newUser = await sut.signUp(user);
 
-    it("Should throw an exception when email already registered in the system", async () => {
-        const user = {
-            userName: "John Doe",
-            email: "test@email.com",
-            password: "testpassword@123"
-        }
+		expect(newUser.email).toBe(user.email);
 
-        const { sut, mockUserRepository } = makeSut([user])
+		expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
+		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+	});
 
-        expect(sut.signUp(user)).rejects.toThrow(
-            CustomException.ConflictException("E-mail already registered")
-        )
+	it("Should throw an exception when email already registered in the system", async () => {
+		const user = {
+			userName: "John Doe",
+			email: "test@email.com",
+			password: "testpassword@123",
+		};
 
-        expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1)
-        expect(mockUserRepository.create).not.toHaveBeenCalled
-    })
-})
+		const { sut, mockUserRepository } = makeSut([user]);
+
+		expect(sut.signUp(user)).rejects.toThrow(
+			CustomException.ConflictException("E-mail already registered"),
+		);
+
+		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+		expect(mockUserRepository.create).not.toHaveBeenCalled;
+	});
+
+	it("Should return token and refresh token when credentials are correct", async () => {
+		const mockUser = {
+			email: "test@gmail.com",
+			password: "testpassword@123",
+		};
+
+		const { sut, mockUserRepository } = makeSut([mockUser]);
+
+		// mocking compare method of bcrypt to return true in the user password comparison
+		mockedBcryptCompare.mockResolvedValue(true);
+
+		// mocking jwt.sign to set fixed values in the user's sign-in return
+		mockedJwtSign.mockReturnValueOnce("mockedToken");
+		mockedJwtSign.mockReturnValueOnce("mockedRefreshToken");
+
+		const signIn = await sut.signIn(mockUser);
+
+		// the signIn function should return the tokens according to the mocked values above
+		expect(signIn).toEqual({
+			token: "mockedToken",
+			refreshToken: "mockedRefreshToken",
+		});
+
+		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+	});
+});
