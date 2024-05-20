@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { AuthInput } from "../validation/authValidation";
+import { SignInValidation } from "../validation/signInValidation";
 import { signUpValidation } from "../validation/signUpValidation";
 import type { Request, Response } from "express";
 import type { AuthService } from "../services/authService";
@@ -53,7 +53,7 @@ export class AuthController implements IAuthController {
 
 	async signIn(req: Request, res: Response): Promise<object> {
 		try {
-			const userCredentials = AuthInput.parse(req.body);
+			const userCredentials = SignInValidation.parse(req.body);
 			const token = await this.authService.signIn(userCredentials);
 
 			return res.status(StatusCodes.OK).json({
