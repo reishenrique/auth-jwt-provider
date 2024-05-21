@@ -89,4 +89,19 @@ describe("Auth Service unit tests", () => {
 
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
+
+	it("Should throw an exception when the passwords do not match", async () => {
+		const mockUser = {
+			email: "test@gmail.com",
+			password: "testpassword@123",
+		};
+
+		const { sut } = makeSut([mockUser]);
+
+		mockedBcryptCompare.mockResolvedValue(false);
+
+		expect(sut.signIn(mockUser)).rejects.toThrow(
+			CustomException.UnauthorizedException("Invalid password"),
+		);
+	});
 });
