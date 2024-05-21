@@ -30,7 +30,7 @@ describe("Auth Service unit tests", () => {
 		jest.clearAllMocks();
 	});
 
-	it("Should return a successfully registered new user", async () => {
+	it("Should return a successfully registered new user (SignUp)", async () => {
 		const user = {
 			userName: "John Doe",
 			email: "test@email.com",
@@ -42,12 +42,13 @@ describe("Auth Service unit tests", () => {
 		const newUser = await sut.signUp(user);
 
 		expect(newUser.email).toBe(user.email);
+		expect(newUser).toBeDefined();
 
 		expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 
-	it("Should throw an exception when email already registered in the system", async () => {
+	it("Should throw an exception when email already registered in the system (SignUp)", async () => {
 		const user = {
 			userName: "John Doe",
 			email: "test@email.com",
@@ -64,7 +65,7 @@ describe("Auth Service unit tests", () => {
 		expect(mockUserRepository.create).not.toHaveBeenCalled;
 	});
 
-	it("Should return token and refresh token when credentials are correct", async () => {
+	it("Should return token and refresh token when credentials are correct (SignIn)", async () => {
 		const mockUser = {
 			email: "test@gmail.com",
 			password: "testpassword@123",
@@ -87,10 +88,12 @@ describe("Auth Service unit tests", () => {
 			refreshToken: "mockedRefreshToken",
 		});
 
+		expect(signIn).toBeDefined();
+
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 
-	it("Should throw an exception when the passwords do not match", async () => {
+	it("Should throw an exception when the passwords do not match (SignIn)", async () => {
 		const mockUser = {
 			email: "test@gmail.com",
 			password: "testpassword@123",
@@ -107,7 +110,7 @@ describe("Auth Service unit tests", () => {
 		expect(sut.signIn).not.toHaveBeenCalled;
 	});
 
-	it("Should throw an exception when the user not found to login", async () => {
+	it("Should throw an exception when the user not found to login (SignIn)", async () => {
 		const { sut, mockUserRepository } = makeSut();
 
 		const mockUser = {
@@ -121,5 +124,21 @@ describe("Auth Service unit tests", () => {
 
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 		expect(sut.signIn).not.toHaveBeenCalled;
+	});
+
+	it("Should generate a refresh token for the user (GenerateRefreshToken)", async () => {
+		const mockedUser = {
+			email: "test@gmail.com",
+			refreshToken: "mockedRefreshToken",
+		};
+
+		const { sut, mockUserRepository } = makeSut([mockedUser]);
+
+		const createRefreshToken = await sut.generateRefreshToken(mockedUser);
+
+		expect(createRefreshToken).toBeDefined();
+		expect(typeof createRefreshToken).toBe("object");
+
+		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 });
