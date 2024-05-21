@@ -103,5 +103,23 @@ describe("Auth Service unit tests", () => {
 		expect(sut.signIn(mockUser)).rejects.toThrow(
 			CustomException.UnauthorizedException("Invalid password"),
 		);
+
+		expect(sut.signIn).not.toHaveBeenCalled;
+	});
+
+	it("Should throw an exception when the user not found to login", async () => {
+		const { sut, mockUserRepository } = makeSut();
+
+		const mockUser = {
+			email: "test@gmail.com",
+			password: "testpassword@123",
+		};
+
+		expect(sut.signIn(mockUser)).rejects.toThrow(
+			CustomException.UnauthorizedException("Unauthorized"),
+		);
+
+		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+		expect(sut.signIn).not.toHaveBeenCalled;
 	});
 });
