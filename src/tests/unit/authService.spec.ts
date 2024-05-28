@@ -142,7 +142,7 @@ describe("Auth Service unit tests", () => {
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 
-	it("Should throw an exception when the user is not found by email (GenerateRefresh Token)", async () => {
+	it("Should throw an exception when the user is not found by email (GenerateRefreshToken)", async () => {
 		const { sut, mockUserRepository } = makeSut();
 
 		const mockedUser = {
@@ -155,5 +155,33 @@ describe("Auth Service unit tests", () => {
 		);
 
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+	});
+
+	it("Should throw an exception when the email is not provided (GenerateRefreshToken)", async () => {
+		const { sut, mockUserRepository } = makeSut();
+
+		const mockedUser = { email: "", refreshToken: "mockedRefreshToken" };
+
+		expect(sut.generateRefreshToken(mockedUser)).rejects.toThrow(
+			CustomException.BadRequestException(
+				"User email is required to proceed with the execution",
+			),
+		);
+
+		expect(mockUserRepository.findUserByEmail).not.toHaveBeenCalled();
+	});
+
+	it("Should throw an exception when the refreshToken is not provided (GenerateRefreshToken)", async () => {
+		const { sut, mockUserRepository } = makeSut();
+
+		const mockedUser = { email: "teste@email.com", refreshToken: "" };
+
+		expect(sut.generateRefreshToken(mockedUser)).rejects.toThrow(
+			CustomException.BadRequestException(
+				"Refresh token is required to proceed with the execution",
+			),
+		);
+
+		expect(mockUserRepository.findUserByEmail).not.toHaveBeenCalled();
 	});
 });
