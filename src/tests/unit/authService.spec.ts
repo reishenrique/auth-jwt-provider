@@ -141,4 +141,19 @@ describe("Auth Service unit tests", () => {
 
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
+
+	it("Should throw an exception when the user is not found by email (GenerateRefresh Token)", async () => {
+		const { sut, mockUserRepository } = makeSut();
+
+		const mockedUser = {
+			email: "test@gmail.com",
+			refreshToken: "mockedRefreshToken",
+		};
+
+		expect(sut.generateRefreshToken(mockedUser)).rejects.toThrow(
+			CustomException.NotFoundException("User not found"),
+		);
+
+		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+	});
 });
