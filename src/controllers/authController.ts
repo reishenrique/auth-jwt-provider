@@ -6,7 +6,7 @@ import type { AuthService } from "../services/authService";
 import { refreshTokenValidation } from "../validation/refreshTokenValidation";
 import { passwordRecoveryValidation } from "../validation/passwordRecoveryValidation";
 import { validateEmailValidation } from "../validation/validateEmailValidation";
-import { CustomException } from "../exceptions/customExceptions";
+import { isCustomException } from "../utils/isCustomException";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
@@ -38,7 +38,7 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: SignUp in AuthController", error);
 
-			if (error instanceof CustomException) {
+			if (isCustomException(error)) {
 				return res.status(error.statusCode).json({
 					message: error.message,
 				});
@@ -63,7 +63,7 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: SignIn in AuthController");
 
-			if (error instanceof CustomException) {
+			if (isCustomException(error)) {
 				return res.status(error.statusCode).json({
 					message: error.message,
 				});
@@ -89,7 +89,7 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: Refresh Token in AuthController");
 
-			if (error instanceof CustomException) {
+			if (isCustomException(error)) {
 				return res.status(error.statusCode).json({
 					message: error.message,
 				});
@@ -113,7 +113,7 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: Password Recovery in AuthController");
 
-			if (error instanceof CustomException) {
+			if (isCustomException(error)) {
 				return res.status(error.statusCode).json({
 					message: error.message,
 				});
@@ -137,7 +137,7 @@ export class AuthController implements IAuthController {
 		} catch (error) {
 			console.log("Handler error: Email Verification in AuthController");
 
-			if (error instanceof CustomException) {
+			if (isCustomException(error)) {
 				return res.status(error.statusCode).json({
 					message: error.message,
 				});
