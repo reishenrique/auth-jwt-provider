@@ -61,19 +61,19 @@ export class AuthService {
 		const { refreshToken, email }: { refreshToken: string; email: string } =
 			refreshAuthCredentials as any;
 
-		if (!refreshToken || refreshToken === "") {
-			throw CustomException.BadRequestException(
-				"Refresh token is required to proceed with the execution",
-			);
-		}
-
 		if (!email || email === "") {
 			throw CustomException.BadRequestException(
 				"User email is required to proceed with the execution",
 			);
 		}
 
-		const user = this.userRepository.findUserByEmail(email);
+		if (!refreshToken || refreshToken === "") {
+			throw CustomException.BadRequestException(
+				"Refresh token is required to proceed with the execution",
+			);
+		}
+
+		const user = await this.userRepository.findUserByEmail(email);
 
 		if (!user) {
 			throw CustomException.NotFoundException("User not found");
