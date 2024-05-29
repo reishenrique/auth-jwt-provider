@@ -3,5 +3,5 @@ node_modules
 /dist/
 
 # Docker archives
-Dockerfile
-docker-compose.yml
+# Dockerfile
+# docker-compose.yml
