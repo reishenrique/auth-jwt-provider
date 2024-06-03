@@ -8,6 +8,11 @@
 		"rules": {
 			"recommended": true
 		},
-		"ignore": ["src/interfaces", "src/utils", "src/services", "src/tests"]
+		"ignore": [
+			"src/domain/interfaces",
+			"src/infrastructure/utils",
+			"src/domain/services",
+			"src/tests"
+		]
 	}
 }

@@ -1,4 +1,4 @@
-import { CustomException } from "../exceptions/customExceptions";
+import { CustomException } from "../../domain/exceptions/customExceptions";
 
 export function isCustomException(error: any): error is CustomException {
 	return (

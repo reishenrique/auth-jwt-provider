@@ -1,4 +1,4 @@
-import { promises as dns } from "dns";
+import { promises as dns } from "node:dns";
 
 export const validateEmailDomain = async (email: string): Promise<boolean> => {
 	const domain = email.split("@")[1];

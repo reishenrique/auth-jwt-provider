@@ -2,11 +2,14 @@ import "dotenv/config";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import { CustomException } from "../exceptions/customExceptions";
-import { generateAccessToken, refreshAccessToken } from "../utils/jwtUtils";
-import { send, validateMailbox } from "../utils/mailerUtils";
 import type { UserEntity } from "../entities/UserEntity";
 import type { IUserRepository } from "../interfaces/IUserRepository";
-import { validateEmailDomain } from "../utils/dnsUtils";
+import {
+	generateAccessToken,
+	refreshAccessToken,
+} from "../../infrastructure/utils/jwtUtils";
+import { send, validateMailbox } from "../../infrastructure/utils/mailerUtils";
+import { validateEmailDomain } from "../../infrastructure/utils/dnsUtils";
 
 export class AuthService {
 	constructor(private userRepository: IUserRepository) {

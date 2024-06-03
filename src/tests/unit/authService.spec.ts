@@ -1,9 +1,9 @@
-import { CustomException } from "../../exceptions/customExceptions";
-import { AuthService } from "../../services/authService";
-import { authRepositoryInMemory } from "../mock/userRepositoryInMemory";
-import type { IUserRepository } from "../../interfaces/IUserRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { authRepositoryInMemory } from "../mock/userRepositoryInMemory";
+import { AuthService } from "../../domain/services/authService";
+import { IUserRepository } from "../../domain/interfaces/IUserRepository";
+import { CustomException } from "../../domain/exceptions/customExceptions";
 
 const makeSut = (
 	users?: any,
