@@ -1,6 +1,6 @@
-import type { UserEntity } from "../entities/UserEntity";
-import type { IUserRepository } from "./../interfaces/IUserRepository";
-import { UserModel } from "../model/userModel";
+import type { UserEntity } from "../../domain/entities/UserEntity";
+import type { IUserRepository } from "../../domain/interfaces/IUserRepository";
+import { UserModel } from "../../infrastructure/model/userModel";
 
 export class UserRepository implements IUserRepository {
 	async create(user: UserEntity): Promise<UserEntity> {

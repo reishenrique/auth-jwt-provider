@@ -1,12 +1,12 @@
 import { StatusCodes } from "http-status-codes";
-import { SignInValidation } from "../validation/signInValidation";
-import { signUpValidation } from "../validation/signUpValidation";
+import { passwordRecoveryValidation } from "../application/validation/passwordRecoveryValidation";
+import { refreshTokenValidation } from "../application/validation/refreshTokenValidation";
+import { SignInValidation } from "../application/validation/signInValidation";
+import { signUpValidation } from "../application/validation/signUpValidation";
+import { validateEmailValidation } from "../application/validation/validateEmailValidation";
+import { isCustomException } from "../infrastructure/utils/isCustomException";
+import type { AuthService } from "../domain/services/authService";
 import type { Request, Response } from "express";
-import type { AuthService } from "../services/authService";
-import { refreshTokenValidation } from "../validation/refreshTokenValidation";
-import { passwordRecoveryValidation } from "../validation/passwordRecoveryValidation";
-import { validateEmailValidation } from "../validation/validateEmailValidation";
-import { isCustomException } from "../utils/isCustomException";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
