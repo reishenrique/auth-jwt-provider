@@ -4,12 +4,17 @@
 
 2. The primary function of an authentication provider is to ensure the security of systems, applications, or services by verifying the identity of users before granting access. This is essential for protecting sensitive information and restricting access to resources only to authorized users.
 
-### Main techonologies used for development?
+### Main techonologies used for development
 - [Node.js (v18.16.0)](https://nodejs.org/en)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Express](https://expressjs.com/pt-br/)
 - [JsonWebToken](https://www.npmjs.com/package/jsonwebtoken)
 - [Zod](https://zod.dev/) 
+- [Docker](https://www.docker.com/)
+- [Mongoose-ODM](https://mongoosejs.com/)
+- [Nodemailer](https://nodemailer.com/)
+- [Bcrypt](https://www.npmjs.com/package/bcrypt)
+- [Http-status-codes](https://www.npmjs.com/package/http-status-codes)
 
 ### Key features
 1. JWT token generation and validation: Ability to generate JWT tokens based on user credentials and validate these tokens during the authentication process.
@@ -17,6 +22,7 @@
 3. Token renewal: Ability to renew expired tokens without the need to re-request user credentials, maintaining the session active seamlessly.
 4. Integration with popular frameworks and libraries: Offering easy integration with web frameworks and popular libraries in various programming languages to simplify the authentication process in web and mobile applications.
 5. Management of signature keys: Facilitating the management of signature keys used to verify the authenticity of JWT tokens, including key rotation and protection against key leakage.
+6. Asynchronous processing: The implementation consists of adding asynchronous processing to user creation, using BullMQ along with a Redis connection instance. (This is still a topic that is being studied before implementation)
 
 
 ### Important Note!
