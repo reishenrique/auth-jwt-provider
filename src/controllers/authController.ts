@@ -4,9 +4,13 @@ import { refreshTokenValidation } from "../application/validation/refreshTokenVa
 import { SignInValidation } from "../application/validation/signInValidation";
 import { signUpValidation } from "../application/validation/signUpValidation";
 import { validateEmailValidation } from "../application/validation/validateEmailValidation";
-import { isCustomException } from "../infrastructure/utils/isCustomException";
-import type { AuthService } from "../domain/services/authService";
 import type { Request, Response } from "express";
+import type { GenerateRefreshTokenUseCase } from "../domain/useCase/generateRefreshTokenUseCase";
+import type { PasswordRecoveryUseCase } from "../domain/useCase/passwordRecoveryUseCase";
+import type { SignInUseCase } from "../domain/useCase/signInUseCase";
+import type { SignUpUseCase } from "../domain/useCase/signUpUseCase";
+import type { ValidateEmailUseCase } from "../domain/useCase/validateEmailUseCase";
+import { isCustomException } from "../infrastructure/utils/isCustomException";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
@@ -17,7 +21,13 @@ interface IAuthController {
 }
 
 export class AuthController implements IAuthController {
-	constructor(private readonly authService: AuthService) {
+	constructor(
+		private readonly signUpUseCase: SignUpUseCase,
+		private readonly signInUseCase: SignInUseCase,
+		private readonly generateRefreshTokenUseCase: GenerateRefreshTokenUseCase,
+		private readonly passwordRecoveryUseCase: PasswordRecoveryUseCase,
+		private readonly validateEmailUseCase: ValidateEmailUseCase,
+	) {
 		this.signUp = this.signUp.bind(this);
 		this.signIn = this.signIn.bind(this);
 		this.refreshToken = this.refreshToken.bind(this);
@@ -28,9 +38,9 @@ export class AuthController implements IAuthController {
 	async signUp(req: Request, res: Response): Promise<object> {
 		try {
 			const user = signUpValidation.parse(req.body);
-			const newUser = await this.authService.signUp(user);
+			const newUser = await this.signUpUseCase.execute(user);
 
-			return res.status(StatusCodes.CREATED).json({
+			return res.status(StatusCodes.OK).json({
 				statusCode: StatusCodes.CREATED,
 				message: "User created successfully",
 				user: newUser,
@@ -54,7 +64,7 @@ export class AuthController implements IAuthController {
 	async signIn(req: Request, res: Response): Promise<object> {
 		try {
 			const userCredentials = SignInValidation.parse(req.body);
-			const token = await this.authService.signIn(userCredentials);
+			const token = await this.signInUseCase.execute(userCredentials);
 
 			return res.status(StatusCodes.OK).json({
 				message: "Authentication successful",
@@ -80,7 +90,7 @@ export class AuthController implements IAuthController {
 		try {
 			const refreshToken = refreshTokenValidation.parse(req.body);
 			const refreshAuthToken =
-				await this.authService.generateRefreshToken(refreshToken);
+				await this.generateRefreshTokenUseCase.execute(refreshToken);
 
 			return res.status(StatusCodes.OK).json({
 				message: "New token for user successfully generated",
@@ -105,7 +115,7 @@ export class AuthController implements IAuthController {
 	async forgotPassword(req: Request, res: Response): Promise<object> {
 		try {
 			const { email } = passwordRecoveryValidation.parse(req.body);
-			await this.authService.passwordRecovery(email);
+			await this.passwordRecoveryUseCase.execute(email);
 
 			return res.status(StatusCodes.OK).json({
 				message: "New password updated",
@@ -129,7 +139,7 @@ export class AuthController implements IAuthController {
 	async emailVerification(req: Request, res: Response): Promise<object> {
 		try {
 			const { email } = validateEmailValidation.parse(req.body);
-			await this.authService.validateEmail(email);
+			await this.validateEmailUseCase.execute(email);
 
 			return res.status(StatusCodes.OK).json({
 				message: "The email sent is valid",
