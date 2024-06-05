@@ -7,7 +7,7 @@
 		"test": "jest",
 		"start": "node build/server.js",
 		"build": "tsc",
-		"dev": "ts-node src/server.ts",
+		"dev": "ts-node src/infrastructure/config/server",
 		"lint": "eslint . --ext .ts,.tsx --fix"
 	},
 	"keywords": [],
@@ -28,9 +28,11 @@
 	},
 	"dependencies": {
 		"bcrypt": "^5.1.1",
+		"bullmq": "^5.7.14",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"http-status-codes": "^2.3.0",
+		"ioredis": "^5.4.1",
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.3.3",
 		"nodemailer": "^6.9.13",

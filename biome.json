@@ -12,7 +12,8 @@
 			"src/domain/interfaces",
 			"src/infrastructure/utils",
 			"src/domain/services",
-			"src/tests"
+			"src/tests",
+			"src/domain/useCase"
 		]
 	}
 }
