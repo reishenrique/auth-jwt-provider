@@ -1,15 +1,31 @@
 import { Router } from "express";
 import { UserRepository } from "../../application/repositories/userRepository";
 import { AuthController } from "../../controllers/authController";
-import { AuthService } from "../../domain/services/authService";
+import { SignInUseCase } from "../../domain/useCase/signInUseCase";
+import { SignUpUseCase } from "../../domain/useCase/signUpUseCase";
+import { GenerateRefreshTokenUseCase } from "../../domain/useCase/generateRefreshTokenUseCase";
+import { PasswordRecoveryUseCase } from "../../domain/useCase/passwordRecoveryUseCase";
+import { ValidateEmailUseCase } from "../../domain/useCase/validateEmailUseCase";
 
 const authRouter = Router();
 
 const userRepository = new UserRepository();
 
-const authService = new AuthService(userRepository);
+const signUpUseCase = new SignUpUseCase(userRepository);
+const signInUseCase = new SignInUseCase(userRepository);
+const generateRefreshTokenUseCase = new GenerateRefreshTokenUseCase(
+	userRepository,
+);
+const passwordRecoveryUseCase = new PasswordRecoveryUseCase(userRepository);
+const valiteEmailUseCase = new ValidateEmailUseCase(userRepository);
 
-const authController = new AuthController(authService);
+const authController = new AuthController(
+	signUpUseCase,
+	signInUseCase,
+	generateRefreshTokenUseCase,
+	passwordRecoveryUseCase,
+	valiteEmailUseCase,
+);
 
 authRouter.post("/sign-up", authController.signUp);
 authRouter.post("/sign-in", authController.signIn);
