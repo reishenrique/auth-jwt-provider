@@ -8,9 +8,9 @@ import type { Request, Response } from "express";
 import type { GenerateRefreshTokenUseCase } from "../domain/useCase/generateRefreshTokenUseCase";
 import type { PasswordRecoveryUseCase } from "../domain/useCase/passwordRecoveryUseCase";
 import type { SignInUseCase } from "../domain/useCase/signInUseCase";
-import type { SignUpUseCase } from "../domain/useCase/signUpUseCase";
 import type { ValidateEmailUseCase } from "../domain/useCase/validateEmailUseCase";
 import { isCustomException } from "../infrastructure/utils/isCustomException";
+import { userQueue } from "../infrastructure/queues/userCreationQueue";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
@@ -22,7 +22,6 @@ interface IAuthController {
 
 export class AuthController implements IAuthController {
 	constructor(
-		private readonly signUpUseCase: SignUpUseCase,
 		private readonly signInUseCase: SignInUseCase,
 		private readonly generateRefreshTokenUseCase: GenerateRefreshTokenUseCase,
 		private readonly passwordRecoveryUseCase: PasswordRecoveryUseCase,
@@ -38,12 +37,12 @@ export class AuthController implements IAuthController {
 	async signUp(req: Request, res: Response): Promise<object> {
 		try {
 			const user = signUpValidation.parse(req.body);
-			const newUser = await this.signUpUseCase.execute(user);
 
-			return res.status(StatusCodes.OK).json({
+			await userQueue.add("signUp", user);
+
+			return res.status(StatusCodes.ACCEPTED).json({
 				statusCode: StatusCodes.CREATED,
-				message: "User created successfully",
-				user: newUser,
+				message: "User creation job added to queue",
 			});
 		} catch (error) {
 			console.log("Handler error: SignUp in AuthController", error);
