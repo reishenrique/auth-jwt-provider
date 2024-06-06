@@ -10,7 +10,7 @@ import type { PasswordRecoveryUseCase } from "../domain/useCase/passwordRecovery
 import type { SignInUseCase } from "../domain/useCase/signInUseCase";
 import type { ValidateEmailUseCase } from "../domain/useCase/validateEmailUseCase";
 import { isCustomException } from "../infrastructure/utils/isCustomException";
-import { userQueue } from "../infrastructure/queues/userCreationQueue";
+import { signUpQueue } from "../infrastructure/queues/userCreationQueue";
 
 interface IAuthController {
 	signUp(req: Request, res: Response): Promise<object>;
@@ -38,7 +38,7 @@ export class AuthController implements IAuthController {
 		try {
 			const user = signUpValidation.parse(req.body);
 
-			await userQueue.add("signUp", user);
+			await signUpQueue.add("signUp", user);
 
 			return res.status(StatusCodes.ACCEPTED).json({
 				statusCode: StatusCodes.ACCEPTED,
