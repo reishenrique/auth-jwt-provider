@@ -1,15 +1,15 @@
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
-import { AuthService } from "../../domain/services/authService";
 import { authRepositoryInMemory } from "../mock/userRepositoryInMemory";
 import { CustomException } from "../../domain/exceptions/customExceptions";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { SignInUseCase } from "../../domain/useCase/signInUseCase";
 
 const makeSut = (
 	users?: any,
-): { sut: AuthService; mockUserRepository: IUserRepository } => {
+): { sut: SignInUseCase; mockUserRepository: IUserRepository } => {
 	const mockUserRepository = new authRepositoryInMemory(users);
-	const sut = new AuthService(mockUserRepository);
+	const sut = new SignInUseCase(mockUserRepository);
 
 	jest.spyOn(mockUserRepository, "findUserByEmail");
 
@@ -42,7 +42,7 @@ describe("Sign in unit tests", () => {
 		mockedJwtSign.mockReturnValueOnce("mockedToken");
 		mockedJwtSign.mockReturnValueOnce("mockedRefreshToken");
 
-		const signIn = await sut.signIn(mockUser);
+		const signIn = await sut.execute(mockUser);
 
 		// the signIn function should return the tokens according to the mocked values above
 		expect(signIn).toEqual({
@@ -65,11 +65,11 @@ describe("Sign in unit tests", () => {
 
 		mockedBcryptCompare.mockResolvedValue(false);
 
-		expect(sut.signIn(mockUser)).rejects.toThrow(
+		expect(sut.execute(mockUser)).rejects.toThrow(
 			CustomException.UnauthorizedException("Invalid password"),
 		);
 
-		expect(sut.signIn).not.toHaveBeenCalled;
+		expect(sut.execute).not.toHaveBeenCalled;
 	});
 
 	it("Should throw an exception when the user not found to login (SignIn)", async () => {
@@ -80,11 +80,11 @@ describe("Sign in unit tests", () => {
 			password: "testpassword@123",
 		};
 
-		expect(sut.signIn(mockUser)).rejects.toThrow(
+		expect(sut.execute(mockUser)).rejects.toThrow(
 			CustomException.UnauthorizedException("Unauthorized"),
 		);
 
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
-		expect(sut.signIn).not.toHaveBeenCalled;
+		expect(sut.execute).not.toHaveBeenCalled;
 	});
 });

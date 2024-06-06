@@ -1,13 +1,13 @@
 import { CustomException } from "../../domain/exceptions/customExceptions";
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
-import { AuthService } from "../../domain/services/authService";
+import { SignUpUseCase } from "../../domain/useCase/signUpUseCase";
 import { authRepositoryInMemory } from "../mock/userRepositoryInMemory";
 
 const makeSut = (
 	users?: any,
-): { sut: AuthService; mockUserRepository: IUserRepository } => {
+): { sut: SignUpUseCase; mockUserRepository: IUserRepository } => {
 	const mockUserRepository = new authRepositoryInMemory(users);
-	const sut = new AuthService(mockUserRepository);
+	const sut = new SignUpUseCase(mockUserRepository);
 
 	jest.spyOn(mockUserRepository, "create");
 	jest.spyOn(mockUserRepository, "findUserByEmail");
@@ -29,7 +29,7 @@ describe("Sign up unit tests", () => {
 
 		const { sut, mockUserRepository } = makeSut();
 
-		const newUser = await sut.signUp(user);
+		const newUser = await sut.execute(user);
 
 		expect(newUser.email).toBe(user.email);
 		expect(newUser).toBeDefined();
@@ -47,7 +47,7 @@ describe("Sign up unit tests", () => {
 
 		const { sut, mockUserRepository } = makeSut([user]);
 
-		expect(sut.signUp(user)).rejects.toThrow(
+		expect(sut.execute(user)).rejects.toThrow(
 			CustomException.ConflictException("E-mail already registered"),
 		);
 

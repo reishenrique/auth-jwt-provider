@@ -1,13 +1,16 @@
 import { CustomException } from "../../domain/exceptions/customExceptions";
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
-import { AuthService } from "../../domain/services/authService";
+import { GenerateRefreshTokenUseCase } from "../../domain/useCase/generateRefreshTokenUseCase";
 import { authRepositoryInMemory } from "../mock/userRepositoryInMemory";
 
 const makeSut = (
 	users?: any,
-): { sut: AuthService; mockUserRepository: IUserRepository } => {
+): {
+	sut: GenerateRefreshTokenUseCase;
+	mockUserRepository: IUserRepository;
+} => {
 	const mockUserRepository = new authRepositoryInMemory(users);
-	const sut = new AuthService(mockUserRepository);
+	const sut = new GenerateRefreshTokenUseCase(mockUserRepository);
 
 	jest.spyOn(mockUserRepository, "create");
 	jest.spyOn(mockUserRepository, "findUserByEmail");
@@ -32,7 +35,7 @@ describe("Generate refresh token unit tests", () => {
 
 		const { sut, mockUserRepository } = makeSut([mockedUser]);
 
-		const createRefreshToken = await sut.generateRefreshToken(mockedUser);
+		const createRefreshToken = await sut.execute(mockedUser);
 
 		expect(createRefreshToken).toBeDefined();
 		expect(typeof createRefreshToken).toBe("object");
@@ -48,7 +51,7 @@ describe("Generate refresh token unit tests", () => {
 			refreshToken: "mockedRefreshToken",
 		};
 
-		expect(sut.generateRefreshToken(mockedUser)).rejects.toThrow(
+		expect(sut.execute(mockedUser)).rejects.toThrow(
 			CustomException.NotFoundException("User not found"),
 		);
 
@@ -60,7 +63,7 @@ describe("Generate refresh token unit tests", () => {
 
 		const mockedUser = { email: "", refreshToken: "mockedRefreshToken" };
 
-		expect(sut.generateRefreshToken(mockedUser)).rejects.toThrow(
+		expect(sut.execute(mockedUser)).rejects.toThrow(
 			CustomException.BadRequestException(
 				"User email is required to proceed with the execution",
 			),
@@ -74,7 +77,7 @@ describe("Generate refresh token unit tests", () => {
 
 		const mockedUser = { email: "teste@email.com", refreshToken: "" };
 
-		expect(sut.generateRefreshToken(mockedUser)).rejects.toThrow(
+		expect(sut.execute(mockedUser)).rejects.toThrow(
 			CustomException.BadRequestException(
 				"Refresh token is required to proceed with the execution",
 			),
