@@ -20,7 +20,6 @@ const passwordRecoveryUseCase = new PasswordRecoveryUseCase(userRepository);
 const valiteEmailUseCase = new ValidateEmailUseCase(userRepository);
 
 const authController = new AuthController(
-	signUpUseCase,
 	signInUseCase,
 	generateRefreshTokenUseCase,
 	passwordRecoveryUseCase,
