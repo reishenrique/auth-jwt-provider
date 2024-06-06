@@ -1,5 +1,5 @@
-import { StatusCodes } from "http-status-codes";
 import { passwordRecoveryValidation } from "../application/validation/passwordRecoveryValidation";
+import { StatusCodes } from "http-status-codes";
 import { refreshTokenValidation } from "../application/validation/refreshTokenValidation";
 import { SignInValidation } from "../application/validation/signInValidation";
 import { signUpValidation } from "../application/validation/signUpValidation";
@@ -41,7 +41,7 @@ export class AuthController implements IAuthController {
 			await userQueue.add("signUp", user);
 
 			return res.status(StatusCodes.ACCEPTED).json({
-				statusCode: StatusCodes.CREATED,
+				statusCode: StatusCodes.ACCEPTED,
 				message: "User creation job added to queue",
 			});
 		} catch (error) {
