@@ -13,13 +13,13 @@ const worker = new Worker(
 			const signUpUseCase = new SignUpUseCase(userRepository);
 
 			await signUpUseCase.execute(job.data);
-			console.log(`Job ${job.id} completed`);
+			console.log(`Job: ${job.id}, completed`);
 		} catch (error) {
 			if (error instanceof Error) {
 				console.error(`Job: ${job.id} failed with error ${error.message}`);
-			} else {
-				console.error(`Job: ${job.id} failed with an unknown error`);
 			}
+
+			console.error(`Job: ${job.id} failed with an unknown error`);
 		}
 	},
 	{ connection },
