@@ -3,10 +3,10 @@ import { connection } from "../config/redisConnection";
 import { SignUpUseCase } from "../../domain/useCase/signUpUseCase";
 import { UserRepository } from "../../application/repositories/userRepository";
 
-const userQueue = new Queue("userQueue", { connection });
+const signUpQueue = new Queue("signUpQueue", { connection });
 
 const worker = new Worker(
-	"userQueue",
+	"signUpQueue",
 	async (job) => {
 		try {
 			const userRepository = new UserRepository();
@@ -19,10 +19,10 @@ const worker = new Worker(
 				console.error(`Job: ${job.id} failed with error ${error.message}`);
 			}
 
-			console.error(`Job: ${job.id} failed with an unknown error`);
+			// console.error(`Job: ${job.id} failed with an unknown error`);
 		}
 	},
 	{ connection },
 );
 
-export { userQueue, worker };
+export { signUpQueue, worker };
