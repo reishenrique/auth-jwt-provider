@@ -14,8 +14,6 @@ const makeSut = (
 
 	jest.spyOn(mockUserRepository, "create");
 	jest.spyOn(mockUserRepository, "findUserByEmail");
-	jest.spyOn(mockUserRepository, "updateUserById");
-	jest.spyOn(mockUserRepository, "updateUserPasswordByEmail");
 
 	return { sut, mockUserRepository };
 };
