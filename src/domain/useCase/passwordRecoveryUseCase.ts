@@ -9,7 +9,7 @@ export class PasswordRecoveryUseCase {
 		this.userRepository = userRepository;
 	}
 
-	async execute(email: string): Promise<void> {
+	async execute(email?: string): Promise<void> {
 		if (!email) {
 			throw CustomException.BadRequestException("Email is required to proceed");
 		}
