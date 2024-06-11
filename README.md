@@ -28,3 +28,12 @@
 ### Important Note!
 - This project is being carried out for testing and personal studies purposes. All decisions made are for study cases. 
 - If you have any suggestions, improvements, or feedback that could contribute to the enhancement and growth of the project, feel free to share your thoughts. I am open to discussing any ideas that could help improve the project.
+
+### Starting the application locally
+1º - Install the application dependencies using the command: ``npm install``
+
+Note: The server will only run on a UNIX-based operating system (Linux or macOS) due to the Redis instance created for asynchronous processing. If you are using Windows, install WSL and Redis on your machine.
+
+2º - Open a terminal in WSL just to start the Redis server, and type the command: ``redis-server``
+
+3º - In another terminal, type the command: ``npm run dev`` and the application will run normally on your local machine for testing
