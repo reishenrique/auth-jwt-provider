@@ -1,4 +1,4 @@
-import "dotenv/config";
+import { env } from "../config/validateEnv";
 import jwt from "jsonwebtoken";
 
 export const generateAccessToken = (user: any) => {
@@ -8,7 +8,7 @@ export const generateAccessToken = (user: any) => {
 		username: user.userName,
 	};
 
-	const secret = process.env.SECRET as string;
+	const secret = env.SECRET as string;
 
 	const expiresIn: jwt.SignOptions = {
 		expiresIn: "8h",
@@ -26,7 +26,7 @@ export const generateAccessToken = (user: any) => {
 };
 
 export const refreshAccessToken = (refreshToken: string, user: any) => {
-	const secret = process.env.SECRET as string;
+	const secret = env.SECRET as string;
 
 	const verifyRefreshToken = jwt.verify(refreshToken, secret || "");
 	if (!verifyRefreshToken) return;

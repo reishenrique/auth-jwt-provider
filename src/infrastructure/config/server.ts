@@ -1,9 +1,9 @@
 import { app } from "../config/app";
-import "dotenv/config";
+import { env } from "../config/validateEnv";
 import mongoose from "mongoose";
 
-const port = process.env.PORT || 3000;
-const stringConnection = process.env.DATABASE_URL as string;
+const port = env.PORT || 3000;
+const stringConnection = env.DATABASE_URL as string;
 
 export const serverConnection = async () => {
 	const mongooseConnection = await mongoose.connect(stringConnection);

@@ -1,19 +1,19 @@
 import nodemailer from "nodemailer";
-import "dotenv/config";
+import { env } from "../config/validateEnv";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
 const transporter = nodemailer.createTransport({
-	host: process.env.MAIL_HOST,
-	port: process.env.MAIL_PORT,
+	host: env.MAIL_HOST,
+	port: env.MAIL_PORT as unknown as number,
 	auth: {
-		user: process.env.MAIL_USER,
-		pass: process.env.MAIL_PASS,
+		user: env.MAIL_USER,
+		pass: env.MAIL_PASS,
 	},
 } as SMTPTransport.Options);
 
 export const send = (to: string, subject: string, body: string) => {
 	transporter.sendMail({
-		from: process.env.MAIL_FROM,
+		from: env.MAIL_FROM,
 		to,
 		subject,
 		text: body,
@@ -25,12 +25,12 @@ export const validateMailbox = async (email: string): Promise<boolean> => {
 
 	const transporter = nodemailer.createTransport({
 		host: `smtp.${domain}`,
-		port: process.env.MAIL_PORT,
+		port: env.MAIL_PORT,
 		sucure: false,
 		tls: {
 			rejectUnauthorized: false,
 		},
-	} as SMTPTransport.Options);
+	} as unknown as SMTPTransport.Options);
 
 	try {
 		await transporter.verify();
