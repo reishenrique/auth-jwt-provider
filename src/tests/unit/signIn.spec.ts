@@ -27,7 +27,7 @@ describe("Sign in unit tests", () => {
 		jest.clearAllMocks();
 	});
 
-	it("Should return token and refresh token when credentials are correct (SignIn)", async () => {
+	it("Should return token and refresh token when credentials are correct", async () => {
 		const mockUser = {
 			email: "test@gmail.com",
 			password: "testpassword@123",
@@ -55,7 +55,7 @@ describe("Sign in unit tests", () => {
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 
-	it("Should throw an exception when the passwords do not match (SignIn)", async () => {
+	it("Should throw an exception when the passwords do not match", async () => {
 		const mockUser = {
 			email: "test@gmail.com",
 			password: "testpassword@123",
@@ -72,7 +72,7 @@ describe("Sign in unit tests", () => {
 		expect(sut.execute).not.toHaveBeenCalled;
 	});
 
-	it("Should throw an exception when the user not found to login (SignIn)", async () => {
+	it("Should throw an exception when the user not found to login", async () => {
 		const { sut, mockUserRepository } = makeSut();
 
 		const mockUser = {

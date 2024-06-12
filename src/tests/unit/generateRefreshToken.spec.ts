@@ -25,7 +25,7 @@ describe("Generate refresh token unit tests", () => {
 		jest.clearAllMocks();
 	});
 
-	it("Should generate a refresh token for the user (GenerateRefreshToken)", async () => {
+	it("Should generate a refresh token for the user", async () => {
 		const mockedUser = {
 			email: "test@gmail.com",
 			refreshToken: "mockedRefreshToken",
@@ -41,7 +41,7 @@ describe("Generate refresh token unit tests", () => {
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 
-	it("Should throw an exception when the user is not found by email (GenerateRefreshToken)", async () => {
+	it("Should throw an exception when the user is not found by email", async () => {
 		const { sut, mockUserRepository } = makeSut();
 
 		const mockedUser = {
@@ -56,7 +56,7 @@ describe("Generate refresh token unit tests", () => {
 		expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
 	});
 
-	it("Should throw an exception when the email is not provided (GenerateRefreshToken)", async () => {
+	it("Should throw an exception when the email is not provided", async () => {
 		const { sut, mockUserRepository } = makeSut();
 
 		const mockedUser = { email: "", refreshToken: "mockedRefreshToken" };
@@ -70,7 +70,7 @@ describe("Generate refresh token unit tests", () => {
 		expect(mockUserRepository.findUserByEmail).not.toHaveBeenCalled();
 	});
 
-	it("Should throw an exception when the refreshToken is not provided (GenerateRefreshToken)", async () => {
+	it("Should throw an exception when the refreshToken is not provided", async () => {
 		const { sut, mockUserRepository } = makeSut();
 
 		const mockedUser = { email: "teste@email.com", refreshToken: "" };
