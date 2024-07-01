@@ -36,6 +36,10 @@ const envSchema = z.object({
 		required_error: "[MAIL FROM] is required",
 		invalid_type_error: "[MAIL FROM] must be a string",
 	}),
+	REDIS_HOST: z.string({
+		required_error: "[REDIS_HOST] is required",
+		invalid_type_error: "Redis Host must be a string"
+	})
 });
 
 export const env = envSchema.parse(process.env);
