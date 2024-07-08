@@ -5,10 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "jest",
-		"start": "node build/server.js",
+		"start": "node dist/infrastructure/config/server.js",
 		"build": "tsc",
-		"dev": "ts-node src/infrastructure/config/server",
-		"lint": "eslint . --ext .ts,.tsx --fix"
+		"dev": "ts-node src/infrastructure/config/server"
 	},
 	"keywords": [],
 	"author": "",
